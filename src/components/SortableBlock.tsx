@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import type { DocumentBlock } from "@/types/document";
 import { BlockContent } from "./BlockContent";
 import { BlockEditor } from "./BlockEditor";
@@ -45,10 +44,20 @@ export function SortableBlock({
     data: { block, pageId },
   });
 
+  // Use only translate (no scale) so the grid keeps controlling block size and
+  // blocks don't deform when they have different column spans (option 4 fix).
+  const transformStyle =
+    transform != null
+      ? `translate3d(${transform.x ?? 0}px, ${transform.y ?? 0}px, 0)`
+      : undefined;
+
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: transformStyle,
     transition,
     gridColumn: `span ${gridColumnSpan}`,
+    // Avoid fixed dimensions so the grid controls size during drag
+    width: undefined,
+    height: undefined,
   };
 
   const handleBlockClick = () => {
