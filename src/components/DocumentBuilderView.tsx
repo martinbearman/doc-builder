@@ -9,6 +9,13 @@ import { PageCanvas } from "./PageCanvas";
 import { ContextBucketPanel } from "./ContextBucketPanel";
 import { LLMPanel } from "./LLMPanel";
 import { clsx } from "clsx";
+import {
+  HeadingIcon,
+  PilcrowIcon,
+  ListBulletIcon,
+  TableIcon,
+  ImageIcon,
+} from "@radix-ui/react-icons";
 
 export function DocumentBuilderView() {
   const dispatch = useAppDispatch();
@@ -26,13 +33,13 @@ export function DocumentBuilderView() {
           <span className="text-sm text-zinc-500">Add:</span>
           {(
             [
-              "heading",
-              "paragraph",
-              "bullets",
-              "table",
-              "image",
+              { type: "heading", Icon: HeadingIcon },
+              { type: "paragraph", Icon: PilcrowIcon },
+              { type: "bullets", Icon: ListBulletIcon },
+              { type: "table", Icon: TableIcon },
+              { type: "image", Icon: ImageIcon },
             ] as const
-          ).map((type) => (
+          ).map(({ type, Icon }) => (
             <button
               key={type}
               type="button"
@@ -44,9 +51,11 @@ export function DocumentBuilderView() {
                   })
                 )
               }
-              className="text-sm capitalize px-2 py-1 rounded border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              className="p-2 rounded border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              aria-label={`Add ${type} block`}
+              title={type}
             >
-              {type}
+              <Icon className="size-4" />
             </button>
           ))}
         </div>

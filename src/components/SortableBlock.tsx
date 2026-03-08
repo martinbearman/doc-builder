@@ -10,6 +10,7 @@ import { useAppDispatch } from "@/store/hooks";
 import { removeBlock } from "@/store/slices/documentSlice";
 import { toggleBlockSelection } from "@/store/slices/contextModeSlice";
 import { clsx } from "clsx";
+import { DragHandleVerticalIcon } from "@radix-ui/react-icons";
 
 type SortableBlockProps = {
   block: DocumentBlock;
@@ -78,7 +79,7 @@ export function SortableBlock({
           {...attributes}
           {...listeners}
         >
-          <GrabIcon />
+          <DragHandleVerticalIcon className="w-5 h-5" />
         </button>
       )}
       <div
@@ -131,14 +132,6 @@ export function SortableBlock({
         </button>
       )}
     </div>
-  );
-}
-
-function GrabIcon() {
-  return (
-    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M7 2a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V4a2 2 0 012-2h2zm6 0a2 2 0 012 2v12a2 2 0 01-2 2h-2a2 2 0 01-2-2V4a2 2 0 012-2h2z" />
-    </svg>
   );
 }
 
