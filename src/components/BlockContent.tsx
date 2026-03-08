@@ -62,12 +62,18 @@ export function BlockContent({ block }: { block: DocumentBlock }) {
     case "image":
       return (
         <figure>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={block.url}
-            alt={block.alt ?? ""}
-            className="max-w-full h-auto rounded border border-zinc-200 dark:border-zinc-700"
-          />
+          {block.url ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={block.url}
+              alt={block.alt ?? ""}
+              className="max-w-full h-auto rounded border border-zinc-200 dark:border-zinc-700"
+            />
+          ) : (
+            <div className="flex items-center justify-center min-h-[120px] rounded border border-dashed border-zinc-300 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-500 dark:text-zinc-400 text-sm">
+              No image URL
+            </div>
+          )}
           {block.caption && (
             <figcaption className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
               {block.caption}
