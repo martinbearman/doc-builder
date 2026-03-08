@@ -16,6 +16,7 @@ import {
   ListBulletIcon,
   TableIcon,
   ImageIcon,
+  DownloadIcon,
 } from "@radix-ui/react-icons";
 
 export function DocumentBuilderView() {
@@ -28,7 +29,7 @@ export function DocumentBuilderView() {
   return (
     <div className="flex flex-col h-screen bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
       {/* Toolbar */}
-      <header className="shrink-0 flex flex-wrap items-center gap-4 px-4 py-2 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+      <header className="no-print shrink-0 flex flex-wrap items-center gap-4 px-4 py-2 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
         <span className="font-semibold text-lg">Document Builder</span>
         <div className="flex items-center gap-2">
           <span className="text-sm text-zinc-500">Add:</span>
@@ -87,17 +88,28 @@ export function DocumentBuilderView() {
         >
           C — Context
         </button>
+        <button
+          type="button"
+          onClick={() => window.print()}
+          className="flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          aria-label="Export as PDF (opens print dialog)"
+        >
+          <DownloadIcon className="size-4" />
+          Export PDF
+        </button>
       </header>
 
       <div className="flex-1 flex min-h-0">
-        <PageSidebar />
+        <div className="no-print">
+          <PageSidebar />
+        </div>
         {/* Main canvas */}
         <main className="flex-1 overflow-auto p-6 flex justify-center">
           <PageCanvas />
         </main>
 
         {/* Sidebar: context bucket + LLM */}
-        <aside className="w-80 shrink-0 border-l border-zinc-200 dark:border-zinc-800 p-4 space-y-4 overflow-auto bg-white dark:bg-zinc-900">
+        <aside className="no-print w-80 shrink-0 border-l border-zinc-200 dark:border-zinc-800 p-4 space-y-4 overflow-auto bg-white dark:bg-zinc-900">
           <ContextBucketPanel />
           <LLMPanel />
         </aside>

@@ -83,7 +83,7 @@ export function SortableBlock({
       {!editing && (
         <button
           type="button"
-          className="cursor-grab active:cursor-grabbing touch-none p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 shrink-0"
+          className="no-print cursor-grab active:cursor-grabbing touch-none p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 shrink-0"
           aria-label="Drag to reorder"
           {...attributes}
           {...listeners}
@@ -120,7 +120,7 @@ export function SortableBlock({
           <>
             <BlockContent block={block} />
             {suggestion && (
-              <div className="mt-2 text-sm text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-2 py-1 rounded border border-amber-200 dark:border-amber-800">
+              <div className="no-print mt-2 text-sm text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-2 py-1 rounded border border-amber-200 dark:border-amber-800">
                 {suggestion}
               </div>
             )}
@@ -130,7 +130,7 @@ export function SortableBlock({
       {!editing && (
         <button
           type="button"
-          className="shrink-0 p-1 text-zinc-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="no-print shrink-0 p-1 text-zinc-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
           aria-label="Remove block"
           onClick={(e) => {
             e.stopPropagation();

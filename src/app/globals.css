@@ -24,3 +24,34 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Print: hide UI chrome, show only the page canvas */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 6mm; /* ~24px, matches canvas inner padding p-6 (1.5rem) */
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+  }
+
+  main {
+    padding: 0 !important;
+    overflow: visible !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+  }
+
+  /* Constrain canvas to A4 width so content doesn't exceed page */
+  main > div {
+    width: 210mm !important;
+    max-width: 210mm !important;
+    box-sizing: border-box;
+  }
+}
