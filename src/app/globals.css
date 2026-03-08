@@ -54,4 +54,14 @@ body {
     max-width: 210mm !important;
     box-sizing: border-box;
   }
+
+  /* Hide scrollbar on canvas inner wrapper when printing/exporting to PDF */
+  main > div > div {
+    overflow: visible !important;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  main > div > div::-webkit-scrollbar {
+    display: none;
+  }
 }

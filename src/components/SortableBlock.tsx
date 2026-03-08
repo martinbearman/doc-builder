@@ -73,10 +73,10 @@ export function SortableBlock({
       ref={setNodeRef}
       style={style}
       className={clsx(
-        "group flex items-start gap-2 rounded-lg border p-3 transition-colors",
+        "group flex items-start gap-2 rounded-lg border p-3 transition-colors print:border-0",
         isDragging && "opacity-50 shadow-lg z-10",
-        isSelected && "ring-2 ring-green-500",
-        isHighlighted && "ring-2 ring-amber-500 border-amber-500",
+        isSelected && "ring-2 ring-green-500 print:ring-0",
+        isHighlighted && "ring-2 ring-amber-500 border-amber-500 print:ring-0 print:border-0",
         !isSelected && !isHighlighted && "border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600"
       )}
     >

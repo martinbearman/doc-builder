@@ -72,29 +72,29 @@ export function PageCanvas() {
     [blockIds, currentPageId, dispatch, page, sortedBlocks]
   );
 
-  // Portrait: min/max width (so canvas doesn't shrink when empty) + aspect ratio for correct proportions
+  // Exact physical proportions; size independent of content so canvas is
+  // always full page when empty; content scrolls inside.
   const pageStyles: Record<
     string,
-    { minWidth: string; maxWidth: string; aspectRatio: string }
+    { width: string; aspectRatio: string }
   > = {
-    a4: { minWidth: "210mm", maxWidth: "min(210mm, 100%)", aspectRatio: "210 / 297" },
-    a5: { minWidth: "148mm", maxWidth: "min(148mm, 100%)", aspectRatio: "148 / 210" },
-    letter: { minWidth: "8.5in", maxWidth: "min(8.5in, 100%)", aspectRatio: "8.5 / 11" },
-    a3: { minWidth: "297mm", maxWidth: "min(297mm, 100%)", aspectRatio: "297 / 420" },
+    a4: { width: "210mm", aspectRatio: "210 / 297" },
+    a5: { width: "148mm", aspectRatio: "148 / 210" },
+    letter: { width: "8.5in", aspectRatio: "8.5 / 11" },
+    a3: { width: "297mm", aspectRatio: "297 / 420" },
   };
   const style = pageStyles[pageSize] ?? pageStyles.a4;
 
   return (
     <div
-      className="bg-white dark:bg-zinc-900 shadow-lg rounded-lg overflow-hidden flex flex-col shrink-0"
+      className="bg-white dark:bg-zinc-900 shadow-lg rounded-lg overflow-hidden shrink-0 relative"
       style={{
-        width: style.minWidth,
-        minWidth: style.minWidth,
-        maxWidth: style.maxWidth,
+        width: style.width,
+        maxWidth: "100%",
         aspectRatio: style.aspectRatio,
       }}
     >
-      <div className="flex-1 overflow-auto p-6">
+      <div className="absolute inset-0 overflow-auto p-6">
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
           <SortableContext
             items={blockIds}
