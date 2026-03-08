@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Document Builder
 
-## Getting Started
+A standalone document builder app with multiple pages, 2D block layout, context selection, and LLM-assisted Q&A with block highlighting.
 
-First, run the development server:
+## Tech stack
+
+- **Framework:** Next.js 16 (App Router), React 19, TypeScript
+- **Styling:** Tailwind CSS
+- **Package manager:** pnpm
+- **State:** Redux Toolkit + react-redux
+- **Drag-and-drop:** @dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities (rectSortingStrategy for 2D)
+- **LLM:** Vercel AI SDK + OpenAI (streaming + tool for block highlighting)
+- **Validation:** Zod
+
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Optional: add `.env.local` with your OpenAI API key for real LLM responses:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+OPENAI_API_KEY=sk-...
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Without it, the chat API returns a short demo message.
 
-## Learn More
+## Run
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+pnpm dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Features
 
-## Deploy on Vercel
+- **Page size:** A4, A5, Letter, A3
+- **Multiple pages:** Add/remove pages, switch via tabs
+- **Blocks:** Heading (1–3), Paragraph, Bullets, Table, Image. Add via toolbar; click to edit inline; drag handle to reorder (2D grid).
+- **Markdown:** Block text is rendered as Markdown (plain strings in data).
+- **Context (C):** Toggle context mode, click blocks to select; selected blocks are sent with LLM questions.
+- **Context bucket:** Add URL (or PDF key) references; “Resolve” fetches URL content for the LLM.
+- **LLM panel:** Ask questions; response streams. If the model calls the highlight tool, blocks are highlighted with optional per-block suggestions. “Clear suggestions” resets.
+- **Export:** PDF/Word can be added later (see spec).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Project structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/types/` — Block, page, document, context bucket types + Zod
+- `src/store/` — Redux store and slices (document, context mode, bucket, LLM)
+- `src/components/` — DocumentBuilderView, PageCanvas, SortableBlock, BlockContent, BlockEditor, ContextBucketPanel, LLMPanel, Providers
+- `src/lib/` — defaultBlocks, markdown renderer
+- `src/app/api/chat/` — LLM stream + highlight_blocks tool
+- `src/app/api/context/` — Fetch URL text for context bucket
