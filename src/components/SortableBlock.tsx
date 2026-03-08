@@ -14,6 +14,7 @@ import { clsx } from "clsx";
 type SortableBlockProps = {
   block: DocumentBlock;
   pageId: string;
+  gridColumnSpan: number;
   isContextMode: boolean;
   isSelected: boolean;
   isHighlighted: boolean;
@@ -23,6 +24,7 @@ type SortableBlockProps = {
 export function SortableBlock({
   block,
   pageId,
+  gridColumnSpan,
   isContextMode,
   isSelected,
   isHighlighted,
@@ -45,6 +47,7 @@ export function SortableBlock({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    gridColumn: `span ${gridColumnSpan}`,
   };
 
   const handleBlockClick = () => {

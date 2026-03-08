@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { GRID_COLUMNS } from "@/config";
 
 // Block position for 2D layout (row and column)
 export const blockPositionSchema = z.object({
@@ -7,6 +8,10 @@ export const blockPositionSchema = z.object({
 });
 export type BlockPosition = z.infer<typeof blockPositionSchema>;
 
+// Block width: full (100%), half (50%), third (33%)
+export const blockWidthSchema = z.enum(["full", "half", "third"]);
+export type BlockWidth = z.infer<typeof blockWidthSchema>;
+
 // Heading block
 export const headingBlockSchema = z.object({
   id: z.string(),
@@ -14,6 +19,7 @@ export const headingBlockSchema = z.object({
   level: z.union([z.literal(1), z.literal(2), z.literal(3)]),
   text: z.string(),
   position: blockPositionSchema,
+  width: blockWidthSchema.optional(),
 });
 export type HeadingBlock = z.infer<typeof headingBlockSchema>;
 
@@ -23,6 +29,7 @@ export const paragraphBlockSchema = z.object({
   type: z.literal("paragraph"),
   text: z.string(),
   position: blockPositionSchema,
+  width: blockWidthSchema.optional(),
 });
 export type ParagraphBlock = z.infer<typeof paragraphBlockSchema>;
 
@@ -32,6 +39,7 @@ export const bulletsBlockSchema = z.object({
   type: z.literal("bullets"),
   items: z.array(z.string()),
   position: blockPositionSchema,
+  width: blockWidthSchema.optional(),
 });
 export type BulletsBlock = z.infer<typeof bulletsBlockSchema>;
 
@@ -42,6 +50,7 @@ export const tableBlockSchema = z.object({
   headers: z.array(z.string()),
   rows: z.array(z.array(z.string())),
   position: blockPositionSchema,
+  width: blockWidthSchema.optional(),
 });
 export type TableBlock = z.infer<typeof tableBlockSchema>;
 
@@ -53,6 +62,7 @@ export const imageBlockSchema = z.object({
   alt: z.string().optional(),
   caption: z.string().optional(),
   position: blockPositionSchema,
+  width: blockWidthSchema.optional(),
 });
 export type ImageBlock = z.infer<typeof imageBlockSchema>;
 
@@ -111,4 +121,17 @@ export function getNextPosition(blocks: DocumentBlock[]): BlockPosition {
     maxCol = Math.max(maxCol, b.position.columnIndex);
   }
   return { rowIndex: maxRow + 1, columnIndex: 0 };
+}
+
+/** Grid column span from config: full=GRID_COLUMNS, half=half, third=third. Default full. */
+export function getBlockGridSpan(block: DocumentBlock): number {
+  const w = block.width ?? "full";
+  switch (w) {
+    case "half":
+      return Math.floor(GRID_COLUMNS / 2);
+    case "third":
+      return Math.floor(GRID_COLUMNS / 3);
+    default:
+      return GRID_COLUMNS;
+  }
 }

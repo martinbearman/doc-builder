@@ -15,11 +15,10 @@ import {
 } from "@dnd-kit/sortable";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { reorderBlocks } from "@/store/slices/documentSlice";
-import { createBlockPosition } from "@/types/document";
+import { GRID_COLUMNS } from "@/config";
+import { createBlockPosition, getBlockGridSpan } from "@/types/document";
 import type { DocumentBlock } from "@/types/document";
 import { SortableBlock } from "./SortableBlock";
-
-const COLUMNS = 2;
 
 function sortBlocksByPosition(blocks: DocumentBlock[]): DocumentBlock[] {
   return [...blocks].sort((a, b) => {
@@ -59,10 +58,7 @@ export function PageCanvas() {
       const reordered = arrayMove(sortedBlocks, oldIndex, newIndex);
       const newPositions = reordered.map((block, i) => ({
         blockId: block.id,
-        position: createBlockPosition(
-          Math.floor(i / COLUMNS),
-          i % COLUMNS
-        ),
+        position: createBlockPosition(i, 0),
       }));
       dispatch(
         reorderBlocks({
@@ -92,6 +88,7 @@ export function PageCanvas() {
     <div
       className="bg-white dark:bg-zinc-900 shadow-lg rounded-lg overflow-hidden flex flex-col shrink-0"
       style={{
+        width: style.minWidth,
         minWidth: style.minWidth,
         maxWidth: style.maxWidth,
         aspectRatio: style.aspectRatio,
@@ -105,13 +102,14 @@ export function PageCanvas() {
           >
             <div
               className="grid gap-3 w-full"
-              style={{ gridTemplateColumns: `repeat(${COLUMNS}, 1fr)` }}
+              style={{ gridTemplateColumns: `repeat(${GRID_COLUMNS}, 1fr)` }}
             >
               {sortedBlocks.map((block) => (
                 <SortableBlock
                   key={block.id}
                   block={block}
                   pageId={currentPageId}
+                  gridColumnSpan={getBlockGridSpan(block)}
                   isContextMode={contextModeEnabled}
                   isSelected={selectedBlockIds.includes(block.id)}
                   isHighlighted={highlightedBlockIds.includes(block.id)}

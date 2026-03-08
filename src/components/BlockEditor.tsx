@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { DocumentBlock } from "@/types/document";
+import type { DocumentBlock, BlockWidth } from "@/types/document";
 import { useAppDispatch } from "@/store/hooks";
 import { updateBlock } from "@/store/slices/documentSlice";
 
@@ -24,10 +24,39 @@ export function BlockEditor({ block, pageId, onDone }: BlockEditorProps) {
     onDone();
   };
 
+  const widthOptions: { value: BlockWidth; label: string }[] = [
+    { value: "full", label: "100%" },
+    { value: "half", label: "50%" },
+    { value: "third", label: "33%" },
+  ];
+
+  const handleWidthChange = (width: BlockWidth) => {
+    setLocal((prev) => ({ ...prev, width }));
+    dispatch(updateBlock({ pageId, blockId: block.id, updates: { width } }));
+  };
+
+  const widthSelector = (
+    <div className="flex items-center gap-2">
+      <span className="text-xs text-zinc-500">Width:</span>
+      <select
+        value={local.width ?? "full"}
+        onChange={(e) => handleWidthChange(e.target.value as BlockWidth)}
+        className="text-sm border border-zinc-300 dark:border-zinc-600 rounded px-2 py-1 bg-white dark:bg-zinc-800"
+      >
+        {widthOptions.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+
   switch (local.type) {
     case "heading":
       return (
         <div className="space-y-2">
+          {widthSelector}
           <select
             value={local.level}
             onChange={(e) =>
@@ -61,6 +90,7 @@ export function BlockEditor({ block, pageId, onDone }: BlockEditorProps) {
     case "paragraph":
       return (
         <div className="space-y-2">
+          {widthSelector}
           <textarea
             value={local.text}
             onChange={(e) => setLocal({ ...local, text: e.target.value })}
@@ -80,6 +110,7 @@ export function BlockEditor({ block, pageId, onDone }: BlockEditorProps) {
     case "bullets":
       return (
         <div className="space-y-2">
+          {widthSelector}
           {local.items.map((item, i) => (
             <div key={i} className="flex gap-2">
               <input
@@ -125,6 +156,7 @@ export function BlockEditor({ block, pageId, onDone }: BlockEditorProps) {
     case "table":
       return (
         <div className="space-y-2 overflow-x-auto">
+          {widthSelector}
           <div>
             <span className="text-xs text-zinc-500">Headers</span>
             <div className="flex gap-2 flex-wrap">
@@ -216,6 +248,7 @@ export function BlockEditor({ block, pageId, onDone }: BlockEditorProps) {
     case "image":
       return (
         <div className="space-y-2">
+          {widthSelector}
           <input
             type="url"
             placeholder="Image URL"

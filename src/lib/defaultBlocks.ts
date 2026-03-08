@@ -19,6 +19,7 @@ export function createHeadingBlock(): HeadingBlock {
     level: 1,
     text: "New Heading",
     position: createBlockPosition(0, 0),
+    width: "full",
   };
 }
 
@@ -28,6 +29,7 @@ export function createParagraphBlock(): ParagraphBlock {
     type: "paragraph",
     text: "",
     position: createBlockPosition(0, 0),
+    width: "full",
   };
 }
 
@@ -37,6 +39,7 @@ export function createBulletsBlock(): BulletsBlock {
     type: "bullets",
     items: [""],
     position: createBlockPosition(0, 0),
+    width: "full",
   };
 }
 
@@ -47,6 +50,7 @@ export function createTableBlock(): TableBlock {
     headers: [""],
     rows: [[""]],
     position: createBlockPosition(0, 0),
+    width: "full",
   };
 }
 
@@ -56,6 +60,7 @@ export function createImageBlock(): ImageBlock {
     type: "image",
     url: "",
     position: createBlockPosition(0, 0),
+    width: "full",
   };
 }
 
