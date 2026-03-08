@@ -76,20 +76,25 @@ export function PageCanvas() {
     [blockIds, currentPageId, dispatch, page, sortedBlocks]
   );
 
-  const aspectRatios: Record<string, string> = {
-    a4: "210 / 297",
-    a5: "148 / 210",
-    letter: "8.5 / 11",
-    a3: "297 / 420",
+  // Portrait: min/max width (so canvas doesn't shrink when empty) + aspect ratio for correct proportions
+  const pageStyles: Record<
+    string,
+    { minWidth: string; maxWidth: string; aspectRatio: string }
+  > = {
+    a4: { minWidth: "210mm", maxWidth: "min(210mm, 100%)", aspectRatio: "210 / 297" },
+    a5: { minWidth: "148mm", maxWidth: "min(148mm, 100%)", aspectRatio: "148 / 210" },
+    letter: { minWidth: "8.5in", maxWidth: "min(8.5in, 100%)", aspectRatio: "8.5 / 11" },
+    a3: { minWidth: "297mm", maxWidth: "min(297mm, 100%)", aspectRatio: "297 / 420" },
   };
-  const aspectRatio = aspectRatios[pageSize] ?? "210 / 297";
+  const style = pageStyles[pageSize] ?? pageStyles.a4;
 
   return (
     <div
-      className="bg-white dark:bg-zinc-900 shadow-lg rounded-lg overflow-hidden flex flex-col"
+      className="bg-white dark:bg-zinc-900 shadow-lg rounded-lg overflow-hidden flex flex-col shrink-0"
       style={{
-        maxWidth: "min(21cm, 100%)",
-        aspectRatio,
+        minWidth: style.minWidth,
+        maxWidth: style.maxWidth,
+        aspectRatio: style.aspectRatio,
       }}
     >
       <div className="flex-1 overflow-auto p-6">

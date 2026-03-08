@@ -82,6 +82,12 @@ export function SortableBlock({
         className="flex-1 min-w-0 cursor-pointer"
         onClick={handleBlockClick}
         onKeyDown={(e) => {
+          const target = e.target as HTMLElement;
+          const isEditable =
+            target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.isContentEditable;
+          if (isEditable) return;
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             handleBlockClick();
