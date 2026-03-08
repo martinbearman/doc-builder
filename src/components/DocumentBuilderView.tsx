@@ -1,11 +1,12 @@
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { addBlock, setPageSize, addPage, setCurrentPage, removePage } from "@/store/slices/documentSlice";
+import { addBlock, setPageSize } from "@/store/slices/documentSlice";
 import { toggleContextMode } from "@/store/slices/contextModeSlice";
 import type { PageSize } from "@/types/document";
 import { createBlock } from "@/lib/defaultBlocks";
 import { PageCanvas } from "./PageCanvas";
+import { PageSidebar } from "./PageSidebar";
 import { ContextBucketPanel } from "./ContextBucketPanel";
 import { LLMPanel } from "./LLMPanel";
 import { clsx } from "clsx";
@@ -19,7 +20,7 @@ import {
 
 export function DocumentBuilderView() {
   const dispatch = useAppDispatch();
-  const { pages, currentPageId, pageSize } = useAppSelector((s) => s.document);
+  const { currentPageId, pageSize } = useAppSelector((s) => s.document);
   const contextModeEnabled = useAppSelector(
     (s) => s.contextMode.contextModeEnabled
   );
@@ -76,13 +77,6 @@ export function DocumentBuilderView() {
         </div>
         <button
           type="button"
-          onClick={() => dispatch(addPage())}
-          className="text-sm px-2 py-1 rounded border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-        >
-          + Add page
-        </button>
-        <button
-          type="button"
           onClick={() => dispatch(toggleContextMode())}
           className={clsx(
             "text-sm font-medium px-3 py-1 rounded border",
@@ -96,40 +90,10 @@ export function DocumentBuilderView() {
       </header>
 
       <div className="flex-1 flex min-h-0">
+        <PageSidebar />
         {/* Main canvas */}
         <main className="flex-1 overflow-auto p-6 flex justify-center">
-          <div className="space-y-4">
-            {/* Page tabs */}
-            <div className="flex flex-wrap gap-2 justify-center">
-              {pages.map((page, idx) => (
-                <div key={page.id} className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => dispatch(setCurrentPage(page.id))}
-                    className={clsx(
-                      "px-3 py-1.5 rounded text-sm border",
-                      currentPageId === page.id
-                        ? "bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 border-zinc-800 dark:border-zinc-200"
-                        : "border-zinc-300 dark:border-zinc-600 hover:bg-zinc-200 dark:hover:bg-zinc-800"
-                    )}
-                  >
-                    Page {idx + 1}
-                  </button>
-                  {pages.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => dispatch(removePage(page.id))}
-                      className="p-1 text-zinc-400 hover:text-red-600 text-xs"
-                      aria-label={`Remove page ${idx + 1}`}
-                    >
-                      ×
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-            <PageCanvas />
-          </div>
+          <PageCanvas />
         </main>
 
         {/* Sidebar: context bucket + LLM */}
