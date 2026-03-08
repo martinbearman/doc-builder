@@ -20,6 +20,10 @@ import { createBlockPosition, getBlockGridSpan } from "@/types/document";
 import type { DocumentBlock } from "@/types/document";
 import { SortableBlock } from "./SortableBlock";
 
+export type PageCanvasProps = {
+  contentAreaRef?: React.RefObject<HTMLDivElement | null>;
+};
+
 function sortBlocksByPosition(blocks: DocumentBlock[]): DocumentBlock[] {
   return [...blocks].sort((a, b) => {
     if (a.position.rowIndex !== b.position.rowIndex)
@@ -28,7 +32,7 @@ function sortBlocksByPosition(blocks: DocumentBlock[]): DocumentBlock[] {
   });
 }
 
-export function PageCanvas() {
+export function PageCanvas({ contentAreaRef }: PageCanvasProps) {
   const dispatch = useAppDispatch();
   const { pages, currentPageId, pageSize } = useAppSelector((s) => s.document);
   const { contextModeEnabled, selectedBlockIds } = useAppSelector(
@@ -94,7 +98,10 @@ export function PageCanvas() {
         aspectRatio: style.aspectRatio,
       }}
     >
-      <div className="absolute inset-0 overflow-auto p-6">
+      <div
+        ref={contentAreaRef}
+        className="absolute inset-0 overflow-auto p-6"
+      >
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
           <SortableContext
             items={blockIds}

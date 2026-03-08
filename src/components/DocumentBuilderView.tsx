@@ -1,10 +1,12 @@
 "use client";
 
+import { useRef, useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addBlock, setPageSize } from "@/store/slices/documentSlice";
 import { toggleContextMode } from "@/store/slices/contextModeSlice";
 import type { PageSize } from "@/types/document";
 import { createBlock } from "@/lib/defaultBlocks";
+import { ESTIMATED_BLOCK_HEIGHT } from "@/config";
 import { PageCanvas } from "./PageCanvas";
 import { PageSidebar } from "./PageSidebar";
 import { ContextBucketPanel } from "./ContextBucketPanel";
@@ -21,10 +23,45 @@ import {
 
 export function DocumentBuilderView() {
   const dispatch = useAppDispatch();
-  const { currentPageId, pageSize } = useAppSelector((s) => s.document);
+  const { pages, currentPageId, pageSize } = useAppSelector((s) => s.document);
   const contextModeEnabled = useAppSelector(
     (s) => s.contextMode.contextModeEnabled
   );
+  const contentAreaRef = useRef<HTMLDivElement>(null);
+  const [pageHasRoom, setPageHasRoom] = useState(true);
+  const [showPageFullMessage, setShowPageFullMessage] = useState(false);
+
+  const page = pages.find((p) => p.id === currentPageId);
+  const blockCount = page?.blocks.length ?? 0;
+
+  useEffect(() => {
+    const id = setTimeout(() => {
+      const el = contentAreaRef.current;
+      if (!el) return;
+      setPageHasRoom(
+        el.scrollHeight + ESTIMATED_BLOCK_HEIGHT <= el.clientHeight
+      );
+    }, 0);
+    return () => clearTimeout(id);
+  }, [currentPageId, blockCount]);
+
+  const handleAddBlock = (type: Parameters<typeof createBlock>[0]) => {
+    const el = contentAreaRef.current;
+    if (
+      el &&
+      el.scrollHeight + ESTIMATED_BLOCK_HEIGHT > el.clientHeight
+    ) {
+      setShowPageFullMessage(true);
+      setTimeout(() => setShowPageFullMessage(false), 2000);
+      return;
+    }
+    dispatch(
+      addBlock({
+        pageId: currentPageId,
+        block: createBlock(type),
+      })
+    );
+  };
 
   return (
     <div className="flex flex-col h-screen bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
@@ -45,21 +82,20 @@ export function DocumentBuilderView() {
             <button
               key={type}
               type="button"
-              onClick={() =>
-                dispatch(
-                  addBlock({
-                    pageId: currentPageId,
-                    block: createBlock(type),
-                  })
-                )
-              }
-              className="p-2 rounded border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              onClick={() => handleAddBlock(type)}
+              disabled={!pageHasRoom}
+              className="p-2 rounded border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-50 disabled:pointer-events-none"
               aria-label={`Add ${type} block`}
-              title={type}
+              title={pageHasRoom ? type : "Page full"}
             >
               <Icon className="size-4" />
             </button>
           ))}
+        {showPageFullMessage && (
+          <span className="text-sm text-amber-600 dark:text-amber-400">
+            Page full
+          </span>
+        )}
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-zinc-500">Page size:</span>
@@ -105,7 +141,7 @@ export function DocumentBuilderView() {
         </div>
         {/* Main canvas */}
         <main className="flex-1 overflow-auto p-6 flex justify-center">
-          <PageCanvas />
+          <PageCanvas contentAreaRef={contentAreaRef} />
         </main>
 
         {/* Sidebar: context bucket + LLM */}
