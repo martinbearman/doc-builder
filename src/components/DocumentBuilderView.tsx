@@ -34,26 +34,46 @@ export function DocumentBuilderView() {
   const page = pages.find((p) => p.id === currentPageId);
   const blockCount = page?.blocks.length ?? 0;
 
+  const measurePageHasRoom = () => {
+    const container = contentAreaRef.current;
+    const grid = container?.querySelector<HTMLElement>("[data-page-content]");
+    if (!container || !grid || container.clientHeight === 0) return;
+    const contentHeight = grid.getBoundingClientRect().height;
+    const availableHeight = container.clientHeight;
+    setPageHasRoom(
+      contentHeight + ESTIMATED_BLOCK_HEIGHT <= availableHeight
+    );
+  };
+
   useEffect(() => {
-    const id = setTimeout(() => {
-      const el = contentAreaRef.current;
-      if (!el) return;
-      setPageHasRoom(
-        el.scrollHeight + ESTIMATED_BLOCK_HEIGHT <= el.clientHeight
-      );
-    }, 0);
+    if (blockCount === 0) {
+      setPageHasRoom(true);
+      return;
+    }
+    const id = setTimeout(measurePageHasRoom, 0);
     return () => clearTimeout(id);
   }, [currentPageId, blockCount]);
 
   const handleAddBlock = (type: Parameters<typeof createBlock>[0]) => {
-    const el = contentAreaRef.current;
-    if (
-      el &&
-      el.scrollHeight + ESTIMATED_BLOCK_HEIGHT > el.clientHeight
-    ) {
-      setShowPageFullMessage(true);
-      setTimeout(() => setShowPageFullMessage(false), 2000);
+    if (blockCount === 0) {
+      dispatch(
+        addBlock({
+          pageId: currentPageId,
+          block: createBlock(type),
+        })
+      );
       return;
+    }
+    const container = contentAreaRef.current;
+    const grid = container?.querySelector<HTMLElement>("[data-page-content]");
+    if (container && grid && container.clientHeight > 0) {
+      const contentHeight = grid.getBoundingClientRect().height;
+      const availableHeight = container.clientHeight;
+      if (contentHeight + ESTIMATED_BLOCK_HEIGHT > availableHeight) {
+        setShowPageFullMessage(true);
+        setTimeout(() => setShowPageFullMessage(false), 2000);
+        return;
+      }
     }
     dispatch(
       addBlock({

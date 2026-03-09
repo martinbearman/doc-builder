@@ -108,6 +108,7 @@ export function PageCanvas({ contentAreaRef }: PageCanvasProps) {
             strategy={rectSortingStrategy}
           >
             <div
+              data-page-content
               className="grid gap-3 w-full"
               style={{ gridTemplateColumns: `repeat(${GRID_COLUMNS}, 1fr)` }}
             >
